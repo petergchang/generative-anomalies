@@ -1,3 +1,5 @@
+from functools import partial
+
 import jax
 import jax.numpy as jnp
 import jax.random as jr
@@ -141,6 +143,7 @@ def generate_offsprings(key, mp_genotypes,
     return offsprings
 
 
+@partial(jax.jit, static_argnums=(1, 2))
 def generate_phenotype_dataset(key, n_generations, n_population, freq=True):
     if isinstance(key, int):
         key = jr.key(key)
