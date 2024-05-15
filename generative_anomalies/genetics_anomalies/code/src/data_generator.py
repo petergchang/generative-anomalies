@@ -50,6 +50,9 @@ LINKAGE_MAP = {
 RECOMBINATION_RATES = jax.tree_util.tree_map(
     lambda x: 0.5 * (1 - jnp.exp(-x/50.)), LINKAGE_MAP
 )
+MENDEL_RECOMBINATION_RATES = jax.tree_util.tree_map(
+    lambda x: 0.5, LINKAGE_MAP
+)
 
 
 def random_split_like_tree(key, target):
@@ -144,7 +147,8 @@ def generate_offsprings(key, mp_genotypes,
 
 
 @partial(jax.jit, static_argnums=(1, 2))
-def generate_phenotype_dataset(key, n_generations, n_population, freq=True):
+def generate_phenotype_dataset(key, n_generations, n_population, freq=True,
+                               recombination_rates=RECOMBINATION_RATES):
     if isinstance(key, int):
         key = jr.key(key)
     if freq:
@@ -158,7 +162,7 @@ def generate_phenotype_dataset(key, n_generations, n_population, freq=True):
         phenotypes = gen_function(curr_genotypes)
         phenotypes_flattened, _ = ravel_pytree(phenotypes)
         mp_genotypes = generate_mating_pair_genotypes(key1, curr_genotypes)
-        offsprings = generate_offsprings(key2, mp_genotypes)
+        offsprings = generate_offsprings(key2, mp_genotypes, recombination_rates)
         return offsprings, phenotypes_flattened
     key, subkey = jr.split(key)
     genotypes = generate_genotypes(key, n_population)
