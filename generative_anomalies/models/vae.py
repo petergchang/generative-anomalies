@@ -126,7 +126,7 @@ def binary_loss(key, params, split_idx, input,
     return loss_total, (loss_rec, loss_kl)
 
 
-@partial(jax.jit, static_argnums=(3, 4, 5, 6, 7))
+@partial(jax.jit, static_argnums=(3, 4, 5, 6))
 def train_step(i, state, batch, encoder_apply, decoder_apply, 
                split_idx, beta_scheduler):
     key = jr.PRNGKey(i)
